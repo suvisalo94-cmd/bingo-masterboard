@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bingo Masterboard</title>
+
+<style>
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: "Avenir Next", -apple-system, BlinkMacSystemFont, sans-serif;
+  overflow: hidden;
+  background: #f2f2f2;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+}
+
+h1 {
+  margin: 0.5vh 0;
+  text-align: center;
+  font-size: 3vh;
+  color: #333;
+}
+
+#main {
+  flex: 1;
+  display: flex;
+  gap: 1vw;
+  padding: 1vh 1vw;
+  box-sizing: border-box;
+  overflow: hidden; /* Prevents body scroll */
+}
+
+/* Left side panel */
+#lastNumberPanel {
+  width: 22%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+#circleWrapper {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#logo {
+  width: 90%;
+  max-height: 18vh;
+  object-fit: contain;
+  margin-bottom: 1.5vh;
+  border-radius: 12px;
+}
+
+#drawBtn {
+  width: 100%;
+  margin-bottom: 2vh;
+  padding: 1.5vh;
+  font-size: 2.2vh;
+  background: linear-gradient(135deg, #FF008C, #ff4bad);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: bold;
+  box-shadow: 0 0.5vh 0 #b30062;
+  transition: all 0.1s;
+}
+
+#drawBtn:hover { filter: brightness(1.1); }
+#drawBtn:active { transform: translateY(0.2vh); box-shadow: 0 0.3vh 0 #b30062; }
+#drawBtn:disabled { background: #ccc; box-shadow: 0 0.4vh 0 #999; cursor: not-allowed; }
+
+#circle {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 50%;
+  background: #333;
+  border: 0.6vh solid #FF008C;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+}
+
+#letter { font-size: 6vh; font-weight: bold; line-height: 1; }
+#number { font-size: 8vh; font-weight: bold; line-height: 1; }
+
+#leftControls {
+  margin-top: 2vh;
+  display: flex;
+  gap: 0.5vw;
+  justify-content: center;
+  width: 100%;
+}
+
+.cute-btn {
+  border: none;
+  padding: 0.8em 1em;
+  font-size: 1.4vh;
+  border-radius: 999px;
+  background: #ddd;
+  color: #333;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.cute-btn:hover { background: #ccc; }
+
+/* Right side board */
+#board {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  background: white;
+  border-radius: 15px;
+  padding: 1vh;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+  border: 1px solid #ddd;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border-right: 1px solid #eee;
+}
+.column:last-child { border-right: none; }
+
+.column-header {
+  width: 85%;
+  background: #FF008C;
+  color: white;
+  text-align: center;
+  font-weight: 800;
+  border-radius: 8px;
+  padding: 0.5vh 0;
+  margin-bottom: 1vh;
+  font-size: 2.5vh;
+}
+
+.number-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.6vh 0.6vw;
+  justify-items: center;
+}
+
+.number {
+  border-radius: 50%;
+  background: #fff;
+  border: 0.3vh solid #FF008C;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  cursor: pointer;
+  color: #FF008C;
+  transition: all 0.1s ease;
+}
+
+.number.drawn {
+  background: #FF008C;
+  color: white;
+}
+
+.number.lonely { grid-column: 1 / span 2; }
+</style>
+</head>
+
+<body>
+
+<h1>Bingo Masterboard</h1>
+
+<div id="main">
+  <div id="lastNumberPanel">
+    <div id="circleWrapper">
+      <img id="logo" src="pepperoni_dog.png" alt="Pepperoni Dog">
+
+      <button id="drawBtn" onclick="drawNumber()">DRAW NUMBER</button>
+
+      <div id="circle">
+        <div id="letter">–</div>
+        <div id="number">–</div>
+      </div>
+
+      <div id="leftControls">
+        <button class="cute-btn" onclick="toggleFullscreen()">Fullscreen</button>
+        <button class="cute-btn" onclick="resetBoard()">Reset Board</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="board"></div>
+</div>
+
+<script>
+const board = document.getElementById("board");
+const letterDisplay = document.getElementById("letter");
+const numberDisplay = document.getElementById("number");
+const drawBtn = document.getElementById("drawBtn");
+
+const headers = ["B","I","N","G","O"];
+const ranges = [[1,15],[16,30],[31,45],[46,60],[61,75]];
+let drawn = [];
+const allCells = {};
+
+// Build Board
+headers.forEach((h, i) => {
+  const col = document.createElement("div");
+  col.className = "column";
+  const header = document.createElement("div");
+  header.className = "column-header";
+  header.textContent = h;
+  col.appendChild(header);
+
+  const grid = document.createElement("div");
+  grid.className = "number-grid";
+
+  for (let n = ranges[i][0]; n <= ranges[i][1]; n++) {
+    const cell = document.createElement("div");
+    cell.className = "number";
+    cell.textContent = n;
+    allCells[n] = cell;
+
+    if (n === ranges[i][1]) cell.classList.add("lonely");
+    cell.onclick = () => toggleNumber(n);
+    grid.appendChild(cell);
+  }
+  col.appendChild(grid);
+  board.appendChild(col);
+});
+
+function toggleNumber(n) {
+  const cell = allCells[n];
+  if (cell.classList.toggle("drawn")) {
+    if (!drawn.includes(n)) drawn.push(n);
+    updateLast(n);
+  } else {
+    drawn = drawn.filter(x => x !== n);
+    if (drawn.length) updateLast(drawn[drawn.length - 1]);
+    else { letterDisplay.textContent = "–"; numberDisplay.textContent = "–"; }
+  }
+  checkDrawBtn();
+}
+
+function drawNumber() {
+  const available = [];
+  for (let i = 1; i <= 75; i++) { if (!drawn.includes(i)) available.push(i); }
+  if (available.length === 0) return;
+  const picked = available[Math.floor(Math.random() * available.length)];
+  toggleNumber(picked);
+}
+
+function updateLast(num) {
+  const letters = ["B", "I", "N", "G", "O"];
+  const index = Math.min(Math.floor((num - 1) / 15), 4);
+  letterDisplay.textContent = letters[index];
+  numberDisplay.textContent = num;
+}
+
+function checkDrawBtn() { drawBtn.disabled = (drawn.length >= 75); }
+
+function resetBoard() {
+  if(!confirm("Are you sure you want to clear the board?")) return;
+  drawn = [];
+  Object.values(allCells).forEach(c => c.classList.remove("drawn"));
+  letterDisplay.textContent = "–";
+  numberDisplay.textContent = "–";
+  drawBtn.disabled = false;
+}
+
+function scale() {
+  // Calculate available height for the 8 rows of numbers
+  const boardPadding = 20; // total padding top/bottom in pixels
+  const headerHeight = document.querySelector(".column-header").offsetHeight;
+  const gapSize = 8 * 6; // 8 rows * 0.6vh gap approx
+  
+  const availableHeight = board.clientHeight - headerHeight - boardPadding - 40; 
+  const cellSize = Math.floor(availableHeight / 8);
+
+  document.querySelectorAll(".number").forEach(n => {
+    n.style.width = cellSize + "px";
+    n.style.height = cellSize + "px";
+    n.style.fontSize = (cellSize * 0.5) + "px";
+  });
+}
+
+function toggleFullscreen() {
+  if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+  else document.exitFullscreen();
+}
+
+window.addEventListener("load", scale);
+window.addEventListener("resize", scale);
+</script>
+
+</body>
+</html>
