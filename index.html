@@ -13,12 +13,11 @@ html, body {
   height: 100%; 
   font-family: "Avenir Next", -apple-system, BlinkMacSystemFont, sans-serif; 
   overflow: hidden; 
-  background: #fafafa; /* Slightly warmer white for better contrast */
+  background: #f4f1ea; 
 }
 
 body { display: flex; flex-direction: column; }
 
-/* Main layout container */
 #main { 
   flex: 1; 
   display: flex; 
@@ -27,14 +26,13 @@ body { display: flex; flex-direction: column; }
   overflow: hidden; 
 }
 
-/* Left side panel */
 #lastNumberPanel { 
   width: 20%; 
   display: flex; 
   flex-direction: column; 
   align-items: center; 
   justify-content: flex-start;
-  padding-top: 2vh;
+  padding-top: 1vh;
   flex-shrink: 0;
 }
 
@@ -51,35 +49,32 @@ body { display: flex; flex-direction: column; }
   margin-bottom: 2vh; 
   padding: 1.8vh; 
   font-size: 2.2vh; 
-  /* NEW PEPPERONI RED THEME */
-  background: linear-gradient(135deg, #c71816, #e53935); 
+  background: linear-gradient(135deg, #c71816, #e53935); /* Back to vivid red */
   color: white; 
   border: none; 
   border-radius: 12px; 
   cursor: pointer; 
   font-weight: 800; 
-  box-shadow: 0 0.5vh 0 #951210; /* Darker red for shadow */
+  box-shadow: 0 0.5vh 0 #951210; 
   text-transform: uppercase;
   letter-spacing: 1px;
-  transition: all 0.1s ease;
 }
 
-#drawBtn:hover { filter: brightness(1.05); }
 #drawBtn:active { transform: translateY(0.2vh); box-shadow: 0 0.3vh 0 #951210; }
-#drawBtn:disabled { background: #ccc; box-shadow: 0 0.4vh 0 #999; cursor: not-allowed; }
+#drawBtn:disabled { background: #bbb; box-shadow: 0 0.4vh 0 #999; }
 
 #circle { 
   width: 100%; 
   aspect-ratio: 1 / 1; 
   border-radius: 50%; 
-  background: #333; 
-  border: 0.6vh solid #c71816; /* NEW PEPPERONI RED THEME */
-  color: white; 
+  background: #2d2d2d; 
+  border: 0.6vh solid #c71816; /* Vivid red border */
+  color: #fff; 
   display: flex; 
   flex-direction: column; 
   align-items: center; 
   justify-content: center; 
-  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
 }
 #letter { font-size: 6vh; font-weight: bold; line-height: 1; }
 #number { font-size: 8vh; font-weight: bold; line-height: 1; }
@@ -91,15 +86,12 @@ body { display: flex; flex-direction: column; }
   width: 100%;
   font-size: 1.3vh; 
   border-radius: 999px; 
-  background: #eee; 
-  color: #555;
+  background: #e8e2d5; 
+  color: #6d665a;
   cursor: pointer; 
   font-weight: 600;
-  transition: background 0.2s;
 }
-.cute-btn:hover { background: #e0e0e0; }
 
-/* Right side content (Header + Board) */
 #boardContainer {
   flex: 1;
   display: flex;
@@ -111,9 +103,9 @@ h1 {
   margin: 0 0 1.5vh 0; 
   text-align: center; 
   font-size: 4.8vh; 
-  color: #c71816; /* NEW PEPPERONI RED THEME */
+  color: #c71816; /* Vivid red title */
   font-weight: 900;
-  text-shadow: 2px 2px 0px rgba(255, 255, 255, 1), 4px 4px 0px rgba(0,0,0,0.06);
+  text-shadow: 1px 1px 0px #fff;
   letter-spacing: -1.5px;
   display: flex;
   align-items: center;
@@ -121,27 +113,26 @@ h1 {
   gap: 15px;
 }
 
-/* PEPPER ICON ANIMATION */
-.pepper-icon {
-  font-size: 5vh;
+.pepperoni-icon {
+  font-size: 4vh;
   animation: bounce 1.5s infinite alternate ease-in-out;
   display: inline-block;
 }
 
 @keyframes bounce {
-  0% { transform: translateY(0); }
-  100% { transform: translateY(-10px); }
+  0% { transform: translateY(0) rotate(-5deg); }
+  100% { transform: translateY(-8px) rotate(5deg); }
 }
 
 #board { 
   flex: 1; 
   display: grid; 
   grid-template-columns: repeat(5, 1fr); 
-  background: white; 
+  background: #fdfaf0; /* Kept cream for visual comfort */
   border-radius: 25px; 
   padding: 2vh; 
-  border: 1px solid #ddd;
-  box-shadow: 0 20px 50px rgba(0,0,0,0.07);
+  border: 1px solid #dcd3bd;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
   overflow: hidden; 
 }
 
@@ -149,15 +140,15 @@ h1 {
   display: flex; 
   flex-direction: column; 
   align-items: center; 
-  border-right: 1px solid #f8f8f8; 
+  border-right: 1px solid #ede4cf; 
   height: 100%;
 }
 .column:last-child { border-right: none; }
 
 .column-header { 
   width: 85%; 
-  background: #c71816; /* NEW PEPPERONI RED THEME */
-  color: white; 
+  background: #c71816; /* Vivid red header */
+  color: #fff; 
   text-align: center; 
   font-weight: 800; 
   border-radius: 12px; 
@@ -165,7 +156,6 @@ h1 {
   margin-bottom: 1.8vh; 
   font-size: 2.8vh; 
   flex-shrink: 0;
-  box-shadow: 0 4px 10px rgba(199, 24, 22, 0.2);
 }
 
 .number-grid { 
@@ -180,12 +170,12 @@ h1 {
 .number { 
   border-radius: 50%; 
   background: #fff; 
-  border: 0.35vh solid #c71816; /* NEW PEPPERONI RED THEME */
+  border: 0.25vh solid #dcd3bd; 
   display: flex; 
   align-items: center; 
   justify-content: center; 
   font-weight: 800; 
-  color: #c71816; /* NEW PEPPERONI RED THEME */
+  color: #6d665a; 
   height: 85%; 
   aspect-ratio: 1/1; 
   margin: auto;
@@ -193,10 +183,11 @@ h1 {
 }
 
 .number.drawn { 
-  background: #c71816; /* NEW PEPPERONI RED THEME */
+  background: #c71816; /* Vivid red when drawn */
+  border-color: #c71816;
   color: white; 
   transform: scale(1.08); 
-  box-shadow: 0 5px 15px rgba(199, 24, 22, 0.3);
+  box-shadow: 0 4px 12px rgba(199, 24, 22, 0.3);
 }
 .number.lonely { grid-column: 1 / span 2; }
 </style>
@@ -217,9 +208,9 @@ h1 {
 
   <div id="boardContainer">
     <h1>
-      <span class="pepper-icon">🌶️</span>
+      <span class="pepperoni-icon">🍕</span>
       Pepperoni Bingo
-      <span class="pepper-icon">🌶️</span>
+      <span class="pepperoni-icon">🍕</span>
     </h1>
     <div id="board"></div>
   </div>
@@ -235,7 +226,6 @@ const ranges = [[1,15],[16,30],[31,45],[46,60],[61,75]];
 let drawn = [];
 const allCells = {};
 
-// Build Board
 headers.forEach((h, i) => {
   const col = document.createElement("div");
   col.className = "column";
@@ -282,7 +272,7 @@ function updateLast(num) {
 }
 
 function resetBoard() {
-  if(!confirm("Start a new game? This will clear everything.")) return;
+  if(!confirm("Start a new game?")) return;
   drawn = [];
   Object.values(allCells).forEach(c => c.classList.remove("drawn"));
   letterDisplay.textContent = "–"; numberDisplay.textContent = "–"; drawBtn.disabled = false;
@@ -291,9 +281,7 @@ function resetBoard() {
 function scale() {
   const numbers = document.querySelectorAll(".number");
   numbers.forEach(n => {
-    // Dynamically adjust font size to fit the circle perfectly
-    const size = n.offsetHeight;
-    n.style.fontSize = (size * 0.45) + "px";
+    n.style.fontSize = (n.offsetHeight * 0.45) + "px";
   });
 }
 
