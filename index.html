@@ -3,41 +3,43 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Bingo Masterboard</title>
+<title>Pepperoni Bingo</title>
 <style>
-* { box-sizing: border-box; } /* CRITICAL: Prevents padding from breaking layout */
+* { box-sizing: border-box; }
 
 html, body { 
   margin: 0; 
   padding: 0; 
   height: 100%; 
-  font-family: "Avenir Next", sans-serif; 
+  font-family: "Avenir Next", -apple-system, BlinkMacSystemFont, sans-serif; 
   overflow: hidden; 
   background: #f2f2f2; 
 }
 
 body { display: flex; flex-direction: column; }
 
-h1 { margin: 0.5vh 0; text-align: center; font-size: 3vh; color: #333; flex-shrink: 0; }
-
+/* Main layout container */
 #main { 
   flex: 1; 
   display: flex; 
   gap: 1.5vw; 
-  padding: 1.5vh 1.5vw; 
+  padding: 2vh 2vw; 
   overflow: hidden; 
 }
 
+/* Left side panel */
 #lastNumberPanel { 
-  width: 22%; 
+  width: 20%; 
   display: flex; 
   flex-direction: column; 
   align-items: center; 
+  justify-content: flex-start;
+  padding-top: 2vh;
 }
 
 #logo { 
   width: 100%; 
-  max-height: 15vh; 
+  max-height: 18vh; 
   object-fit: contain; 
   margin-bottom: 2vh; 
   border-radius: 12px; 
@@ -53,12 +55,14 @@ h1 { margin: 0.5vh 0; text-align: center; font-size: 3vh; color: #333; flex-shri
   border: none; 
   border-radius: 12px; 
   cursor: pointer; 
-  font-weight: bold; 
+  font-weight: 800; 
   box-shadow: 0 0.5vh 0 #b30062; 
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 #drawBtn:active { transform: translateY(0.2vh); box-shadow: 0 0.3vh 0 #b30062; }
-#drawBtn:disabled { background: #ccc; box-shadow: 0 0.4vh 0 #999; }
+#drawBtn:disabled { background: #ccc; box-shadow: 0 0.4vh 0 #999; cursor: not-allowed; }
 
 #circle { 
   width: 100%; 
@@ -71,86 +75,106 @@ h1 { margin: 0.5vh 0; text-align: center; font-size: 3vh; color: #333; flex-shri
   flex-direction: column; 
   align-items: center; 
   justify-content: center; 
+  box-shadow: 0 10px 20px rgba(0,0,0,0.1);
 }
 #letter { font-size: 6vh; font-weight: bold; }
 #number { font-size: 8vh; font-weight: bold; }
 
 .cute-btn { 
-  margin-top: 2vh; 
+  margin-top: 1.5vh; 
   border: none; 
   padding: 1vh; 
   width: 100%;
-  font-size: 1.4vh; 
+  font-size: 1.3vh; 
   border-radius: 999px; 
-  background: #ddd; 
+  background: #e0e0e0; 
+  color: #555;
   cursor: pointer; 
+  font-weight: 600;
+}
+.cute-btn:hover { background: #d0d0d0; }
+
+/* Right side content (Header + Board) */
+#boardContainer {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
-/* Updated Board Styles */
+h1 { 
+  margin: 0 0 1.5vh 0; 
+  text-align: center; 
+  font-size: 4.5vh; 
+  color: #FF008C; 
+  font-weight: 900;
+  text-shadow: 2px 2px 0px rgba(255, 255, 255, 1), 4px 4px 0px rgba(0,0,0,0.05);
+  letter-spacing: -1px;
+}
+
 #board { 
   flex: 1; 
   display: grid; 
   grid-template-columns: repeat(5, 1fr); 
   background: white; 
-  border-radius: 15px; 
-  padding: 1.5vh; 
+  border-radius: 20px; 
+  padding: 2vh; 
   border: 1px solid #ddd;
-  overflow: hidden; /* Keeps circles inside the white box */
+  box-shadow: 0 15px 35px rgba(0,0,0,0.05);
+  overflow: hidden; 
 }
 
 .column { 
   display: flex; 
   flex-direction: column; 
   align-items: center; 
-  border-right: 1px solid #f0f0f0; 
+  border-right: 1px solid #f5f5f5; 
   height: 100%;
 }
 .column:last-child { border-right: none; }
 
 .column-header { 
-  width: 90%; 
+  width: 85%; 
   background: #FF008C; 
   color: white; 
   text-align: center; 
   font-weight: 800; 
-  border-radius: 8px; 
+  border-radius: 10px; 
   padding: 0.8vh 0; 
-  margin-bottom: 1vh; 
-  font-size: 2.5vh; 
+  margin-bottom: 1.5vh; 
+  font-size: 2.8vh; 
   flex-shrink: 0;
 }
 
 .number-grid { 
-  flex: 1; /* Takes up remaining space in the column */
+  flex: 1; 
   display: grid; 
   grid-template-columns: repeat(2, 1fr); 
-  grid-template-rows: repeat(8, 1fr); /* Force 8 equal rows */
+  grid-template-rows: repeat(8, 1fr); 
   gap: 0.5vh 0.5vw; 
   width: 100%;
-  padding-bottom: 1vh; /* Small buffer at the bottom */
 }
 
 .number { 
   border-radius: 50%; 
   background: #fff; 
-  border: 0.3vh solid #FF008C; 
+  border: 0.35vh solid #FF008C; 
   display: flex; 
   align-items: center; 
   justify-content: center; 
-  font-weight: bold; 
+  font-weight: 800; 
   color: #FF008C;
-  height: 90%; /* Scale slightly smaller than the row height */
-  aspect-ratio: 1/1; /* Keep them perfect circles */
+  height: 85%; 
+  aspect-ratio: 1/1; 
   margin: auto;
+  transition: transform 0.1s;
 }
 
-.number.drawn { background: #FF008C; color: white; }
+.number.drawn { background: #FF008C; color: white; transform: scale(1.05); }
 .number.lonely { grid-column: 1 / span 2; }
 </style>
 </head>
 <body>
-
-<h1>Bingo Masterboard</h1>
 
 <div id="main">
   <div id="lastNumberPanel">
@@ -161,10 +185,13 @@ h1 { margin: 0.5vh 0; text-align: center; font-size: 3vh; color: #333; flex-shri
       <div id="number">–</div>
     </div>
     <button class="cute-btn" onclick="resetBoard()">Reset Board</button>
-    <button class="cute-btn" onclick="toggleFullscreen()">Fullscreen</button>
+    <button class="cute-btn" onclick="toggleFullscreen()">Fullscreen Mode</button>
   </div>
 
-  <div id="board"></div>
+  <div id="boardContainer">
+    <h1>Pepperoni Bingo</h1>
+    <div id="board"></div>
+  </div>
 </div>
 
 <script>
@@ -223,7 +250,7 @@ function updateLast(num) {
 }
 
 function resetBoard() {
-  if(!confirm("Reset?")) return;
+  if(!confirm("Start a new game? This will clear everything.")) return;
   drawn = [];
   Object.values(allCells).forEach(c => c.classList.remove("drawn"));
   letterDisplay.textContent = "–"; numberDisplay.textContent = "–"; drawBtn.disabled = false;
@@ -232,7 +259,6 @@ function resetBoard() {
 function scale() {
   const numbers = document.querySelectorAll(".number");
   numbers.forEach(n => {
-    // Dynamic font size based on the actual height of the circle
     n.style.fontSize = (n.offsetHeight * 0.45) + "px";
   });
 }
