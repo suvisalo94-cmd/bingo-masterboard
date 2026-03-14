@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Bingo Masterboard</title>
+
+<style>
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: "Avenir Next", -apple-system, BlinkMacSystemFont, sans-serif;
+  overflow: hidden;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  background: #f2f2f2;
+}
+
+/* Header */
+h1 {
+  margin: 0.4vh 0;
+  text-align: center;
+  font-size: 3vh;
+}
+
+/* Main layout */
+#main {
+  flex: 1;
+  display: flex;
+  gap: 1vw;
+  padding: 1vh 1vw;
+  box-sizing: border-box;
+}
+
+/* Left panel */
+#lastNumberPanel {
+  width: 22%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#circleWrapper {
+  width: 100%;
+  max-width: 90%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Logo */
+#logo {
+  width: 60%;
+  margin-bottom: 1vh;
+}
+
+/* Draw Button Specific Style */
+#drawBtn {
+  width: 100%;
+  margin-bottom: 2vh;
+  padding: 1.2vh;
+  font-size: 2.2vh;
+  background: linear-gradient(135deg, #FF008C, #ff4bad);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: bold;
+  box-shadow: 0 0.5vh 0 #b30062;
+  transition: all 0.1s;
+}
+
+#drawBtn:hover {
+  filter: brightness(1.1);
+}
+
+#drawBtn:active {
+  transform: translateY(0.3vh);
+  box-shadow: 0 0.2vh 0 #b30062;
+}
+
+#drawBtn:disabled {
+  background: #ccc;
+  box-shadow: 0 0.4vh 0 #999;
+  cursor: not-allowed;
+}
+
+/* Last number circle */
+#circle {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 50%;
+  background: #333;
+  border: 0.5vh solid #FF008C;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+#letter {
+  font-size: 6vh;
+  font-weight: bold;
+}
+
+#number {
+  font-size: 5vh;
+  font-weight: bold;
+}
+
+/* Buttons row */
+#leftControls {
+  margin-top: 1.2vh;
+  display: flex;
+  gap: 0.8vw;
+  justify-content: center;
+  width: 100%;
+}
+
+/* Cute buttons */
+.cute-btn {
+  border: none;
+  padding: 0.6em 1.4em;
+  font-size: 1.6vh;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #ffb3c7, #ffa1d2);
+  color: #5a0036;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 0.4vh 0 rgba(0,0,0,0.15);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.cute-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0.6vh 0 rgba(0,0,0,0.18);
+}
+
+.cute-btn:active {
+  transform: translateY(1px);
+  box-shadow: 0 0.2vh 0 rgba(0,0,0,0.2);
+}
+
+/* Board */
+#board {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  height: 100%;
+  border-left: 0.4vh solid #ccc;
+}
+
+/* Column */
+.column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border-right: 0.4vh solid #ccc;
+}
+
+/* Column header */
+.column-header {
+  width: 90%;
+  background: #FFA8B6;
+  color: white;
+  text-align: center;
+  font-weight: bold;
+  border-radius: 0.4vh;
+  padding: 0.3em 0;
+  margin-bottom: 0.4vh;
+  font-size: 2.4vh;
+}
+
+/* Number grid */
+.number-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.5vh 0.5vw;
+  justify-items: center;
+  width: 100%;
+}
+
+/* Number circles */
+.number {
+  border-radius: 50%;
+  background: white;
+  border: 0.35vh solid #FF008C;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.number.drawn {
+  background: #FFA8B6;
+}
+
+/* Center loners */
+.number.lonely {
+  grid-column: 1 / span 2;
+  justify-self: center;
+}
+</style>
+</head>
+
+<body>
+
+<h1>Bingo Masterboard</h1>
+
+<div id="main">
+  <div id="lastNumberPanel">
+    <div id="circleWrapper">
+
+      <img
+        id="logo"
+        src="https://drive.google.com/uc?export=view&id=1-rVpk6MmpEr1AkSZ9RU0IYlsobI4foYZ"
+        alt="Logo"
+      >
+
+      <button id="drawBtn" onclick="drawNumber()">DRAW NUMBER</button>
+
+      <div id="circle">
+        <div id="letter">–</div>
+        <div id="number">–</div>
+      </div>
+
+      <div id="leftControls">
+        <button class="cute-btn" onclick="toggleFullscreen()">Large Screen</button>
+        <button class="cute-btn" onclick="resetBoard()">Reset</button>
+      </div>
+
+    </div>
+  </div>
+
+  <div id="board"></div>
+</div>
+
+<script>
+const board = document.getElementById("board");
+const letterDisplay = document.getElementById("letter");
+const numberDisplay = document.getElementById("number");
+const drawBtn = document.getElementById("drawBtn");
+
+const headers = ["B","I","N","G","O"];
+const ranges = [[1,15],[16,30],[31,45],[46,60],[61,75]];
+const rows = 8;
+let drawn = [];
+const allCells = {}; // Map to store number -> element reference
+
+/* Build board */
+headers.forEach((h, i) => {
+  const col = document.createElement("div");
+  col.className = "column";
+
+  const header = document.createElement("div");
+  header.className = "column-header";
+  header.textContent = h;
+  col.appendChild(header);
+
+  const grid = document.createElement("div");
+  grid.className = "number-grid";
+
+  for (let n = ranges[i][0]; n <= ranges[i][1]; n++) {
+    const cell = document.createElement("div");
+    cell.className = "number";
+    cell.textContent = n;
+    allCells[n] = cell; // Save reference
+
+    if (n === ranges[i][1]) cell.classList.add("lonely");
+
+    cell.onclick = () => {
+      toggleNumber(n);
+    };
+
+    grid.appendChild(cell);
+  }
+
+  col.appendChild(grid);
+  board.appendChild(col);
+});
+
+function toggleNumber(n) {
+  const cell = allCells[n];
+  if (cell.classList.toggle("drawn")) {
+    drawn.push(n);
+    updateLast(n);
+  } else {
+    drawn = drawn.filter(x => x !== n);
+    if (drawn.length) {
+      updateLast(drawn[drawn.length - 1]);
+    } else {
+      letterDisplay.textContent = "–";
+      numberDisplay.textContent = "–";
+    }
+  }
+  checkDrawButton();
+}
+
+/* NEW: Draw a random number */
+function drawNumber() {
+  const available = [];
+  for (let i = 1; i <= 75; i++) {
+    if (!drawn.includes(i)) available.push(i);
+  }
+
+  if (available.length === 0) return;
+
+  const randomIndex = Math.floor(Math.random() * available.length);
+  const picked = available[randomIndex];
+  
+  toggleNumber(picked);
+}
+
+function checkDrawButton() {
+  drawBtn.disabled = drawn.length >= 75;
+}
+
+/* Scale numbers */
+function scale() {
+  const boardHeight = board.clientHeight;
+  const headerHeight = document.querySelector(".column-header").offsetHeight;
+  const available = boardHeight - headerHeight;
+  const size = Math.floor(available / rows) - 6;
+
+  document.querySelectorAll(".number").forEach(n => {
+    n.style.width = size + "px";
+    n.style.height = size + "px";
+    n.style.fontSize = Math.floor(size * 0.45) + "px";
+  });
+}
+
+function updateLast(num) {
+  letterDisplay.textContent =
+    num <= 15 ? "B" :
+    num <= 30 ? "I" :
+    num <= 45 ? "N" :
+    num <= 60 ? "G" : "O";
+  numberDisplay.textContent = num;
+}
+
+function resetBoard() {
+  drawn = [];
+  document.querySelectorAll(".number").forEach(n => n.classList.remove("drawn"));
+  letterDisplay.textContent = "–";
+  numberDisplay.textContent = "–";
+  drawBtn.disabled = false;
+}
+
+function toggleFullscreen() {
+  if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+  else document.exitFullscreen();
+}
+
+window.addEventListener("load", scale);
+window.addEventListener("resize", scale);
+</script>
+
+</body>
+</html>
